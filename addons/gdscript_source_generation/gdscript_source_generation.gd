@@ -1,0 +1,165 @@
+@tool
+extends EditorPlugin
+class_name SourceGenerationPlugin
+
+func _enable_plugin() -> void:
+	var command_palette = EditorInterface.get_command_palette()
+	command_palette.add_command("Run Code Generation", "codegen/generate", Callable(run_codegen))
+	command_palette.add_command("Remove All Generated Files", "codegen/remove_generated", Callable(run_clean))
+	add_tool_menu_item("Run Code Generation", Callable(run_codegen))
+	add_tool_menu_item("Remove All Generated Files", Callable(run_clean))
+
+func _disable_plugin() -> void:
+	var command_palette = EditorInterface.get_command_palette()
+	command_palette.remove_command("codegen/generate")
+	command_palette.remove_command("codegen/remove_generated")
+	remove_tool_menu_item("Run Code Generation")
+	remove_tool_menu_item("Remove All Generated Files")
+	
+var _confirm_dialog
+	
+func _exit_tree() -> void:
+	if _confirm_dialog != null:
+		_confirm_dialog.queue_free()
+
+class DialogWrapper extends ConfirmationDialog:
+	signal _prompt_closed(result: bool)
+	
+	func _callback(value: bool) -> void:
+		_prompt_closed.emit(value)
+		
+	func prompt() -> bool:
+		self.confirmed.connect(_callback.bind(true))
+		self.canceled.connect(_callback.bind(false))
+		self.show()
+		return await _prompt_closed
+	
+func show_confirm_dialog() -> bool:
+	_confirm_dialog = DialogWrapper.new()
+	_confirm_dialog.title = "Remove generated files"
+	_confirm_dialog.dialog_text = "This will remove any directories named \"_genererated_\" and the all files contained within them. Do you want to continue?"
+	
+	get_editor_interface().get_base_control().add_child(_confirm_dialog)
+	_confirm_dialog.popup_centered()
+	var value = await _confirm_dialog.prompt()
+	_confirm_dialog.queue_free()
+	return value
+	
+static func is_generator(script: GDScript) -> bool:
+	if script is not GDScript:
+		return false
+	var x = (script as GDScript).get_base_script()
+	if x == null:
+		return false
+	if x.get_global_name() == &"ScriptGenerator":
+		return true
+	return is_generator(x)
+	
+static func is_generated_dir(path: String) -> bool:
+	return path.ends_with("_generated_")
+
+func run_clean() -> void:
+	if not (await show_confirm_dialog()):
+		return
+	_clean()
+	get_editor_interface().get_resource_filesystem().scan()
+	
+static func get_dirs_recursive(path: String) -> Array[String]:
+	var dirs: Array[String] = []
+	var dir_access = DirAccess.open(path)
+	for dir in dir_access.get_directories():
+		if dir.begins_with("."):
+			continue
+		var full = path.path_join(dir)
+		dirs.push_back(full)
+		dirs.append_array(get_dirs_recursive(full))
+	return dirs
+		
+static func _clean() -> void:
+	var count = 0
+	var dirs = get_dirs_recursive("res://")
+	for dir in dirs:
+		if dir.begins_with("res://addons"):
+			continue
+		if is_generated_dir(dir):
+			var d = DirAccess.open(dir)
+			for file in d.get_files():
+				d.remove(file)
+				count += 1
+			var err = DirAccess.remove_absolute(dir)
+		
+	print("Removed %d previously generated files" % count)
+
+static func get_files_recursive(path: String) -> Array[String]:
+	var dir_access = DirAccess.open(path)
+	var files: Array[String] = []
+	for file_name in dir_access.get_files():
+		files.append(path.path_join(file_name))
+	for dir in dir_access.get_directories():
+		files.append_array(get_files_recursive(path.path_join(dir)))
+	return files
+
+func run_codegen() -> void:
+	if not (await show_confirm_dialog()):
+		return
+	_clean()
+	_codegen()
+	get_editor_interface().get_resource_filesystem().scan()
+	
+static func _codegen() -> void:
+	print("Discovering generators")
+	
+	var generator_scripts: Array[GDScript] = []
+	var files = get_files_recursive("res://")
+	for file in files:
+		if file.begins_with("res://addons"):
+			continue
+		elif is_generated_dir(file.get_base_dir()):
+			continue
+		elif file.ends_with(".gd"):
+			var script = load(file)
+			if script is not GDScript:
+				continue
+			if is_generator(script):
+				generator_scripts.push_back(script)
+				
+	print("Found %d generators" % len(generator_scripts))
+				
+	var count = 0
+
+	for gen in generator_scripts:
+		var parent_dir_path = gen.resource_path.get_base_dir()
+		var parent_dir = DirAccess.open(parent_dir_path)
+		print("Running Generator: " + gen.resource_path)
+		
+		var generator = gen.new() as ScriptGenerator
+		if generator == null:
+			push_error("%s is not ScriptGenerator" % gen.resource_path)
+			
+		var data = generator.get_source_data()
+		
+		for file_data in data:
+			var name = generator.get_file_name(file_data)
+			var file_parent_dir = generator.destination_directory_path(file_data)
+			if file_parent_dir == null:
+				file_parent_dir = parent_dir_path
+			file_parent_dir = file_parent_dir.path_join("_generated_")
+			if DirAccess.open(file_parent_dir) == null:
+				DirAccess.make_dir_recursive_absolute(file_parent_dir)
+			
+			var path = file_parent_dir.path_join(name + "_gen.gd")
+			
+			print("\t-> emitted " + path)
+			var file = FileAccess.open(path, FileAccess.WRITE)
+			var source = generator.generate_source(file_data)
+			source = ("""###
+### THIS FILE WAS GENERATED BY %s
+### DO NOT EDIT THIS FILE DIRECTLY. EDIT %s THEN RUN THE CODE GENERATION COMMAND
+###
+
+""" % [gen.resource_path, gen.resource_path.get_file()]) + source
+			file.store_string(source)
+			file.flush()
+			count += 1
+			
+	print("Generated %d files" % count)

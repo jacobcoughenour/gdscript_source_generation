@@ -1,9 +1,11 @@
-# gdscript-codegen
-An addon for Godot that adds basic scriptable source generation. Inspired by C# source generators.
+# GDScript Source Generation Addon for Godot
+An addon for Godot that adds basic scriptable source generation. Inspired by [C# source generators](https://devblogs.microsoft.com/dotnet/introducing-c-source-generators/).
 
-All you have to do is extend ScriptGenerator and do the `Run Code Generation` command.
+All you have to do is extend ScriptGenerator and Click `Run Code Generation` in Project -> Tools.
 
+## Example
 ```gdscript
+# minimal_generator.gd
 extends ScriptGenerator
 
 func get_source_data() -> Array:
@@ -23,8 +25,8 @@ func test() -> String:
 
 This generator will generate the following files:
 
-_generated_/example_1_gen.gd
 ```gdscript
+# _generated_/example_1_gen.gd
 extends Object
 class_name Example1
 
@@ -32,8 +34,8 @@ func test() -> String:
 	return "Hello from 1"
 ```
 
-_generated_/example_2_gen.gd
 ```gdscript
+# _generated_/example_2_gen.gd
 extends Object
 class_name Example2
 
@@ -41,17 +43,35 @@ func test() -> String:
 	return "Hello from 2"
 ```
 
+## Installation
+
+Copy `gdscript_source_generation` from the addons folder in this repo to your project's addons folder. Open Project Settings > Plugins then enable the plugin.
+
 ## FAQ
 
-Why?
+### Why?
+Read my post for why I made this: [jacobcoughenour.com/posts/gdscript-fake-generics/](https://jacobcoughenour.com)
 
-Read my post here for why I made this: 
-
-Does this use AI?
-
+### Does this use AI?
 No
 
+### Can I generate the files outside of the editor?
+Yes. Both the `generate` and `clean` commands are available as scripts. In the same directory that your project.godot file is in, you can run them like this:
+```
+godot --script addons/gdscript_codegen/generate.gd
+godot --script addons/gdscript_codegen/clean.gd
+```
+> The `generate` script also cleans up the generated files so you don't have to always run `clean`
 
-Should I track the generated files in git/source control?
+### Should I track the generated files in git/source control?
 
-Yes. The files are not generated automatically when the project is built so it's going to be easier to just include all the files.
+That is up to you. You can chose to ignore the `_generated_` folders but . To get around any automated build issues, add `godot --script addons/gdscript_codegen/generate.gd` to your build script.
+
+### Why make a `_generated_` folder?
+This makes it easier for me to clean up all the generated files before generating new ones. I had it ending the files with `.gen.gd` but that broke gdUnit4 when I was generating unit tests.
+
+### Can I change where the the generated files go?
+Yes, If you override the `destination_directory_path()` method in your generator. It will still append `_generated_` to whatever path is returned.
+
+### Is this maintained?
+As long as I'm actually using it for my own projects.
