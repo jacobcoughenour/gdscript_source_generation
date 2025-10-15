@@ -45,7 +45,8 @@ func test() -> String:
 
 ## Installation
 
-Copy `gdscript_source_generation` from the addons folder in this repo to your project's addons folder. Open Project Settings > Plugins then enable the plugin.
+* Copy `gdscript_source_generation` from the addons folder in this repo to your project's addons folder. 
+* Open Project Settings -> Plugins then enable the plugin.
 
 ## FAQ
 

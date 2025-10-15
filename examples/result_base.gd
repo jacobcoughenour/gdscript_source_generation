@@ -1,0 +1,88 @@
+@abstract
+class_name ResultBase
+extends Object
+
+const _ok_msg = &"OK"
+const _unknown_msg = &"Unknown Error"
+
+@warning_ignore("unused_private_class_variable")
+static var _error_map = {
+	OK: &"OK",
+	FAILED: &"FAILED",
+	ERR_UNAVAILABLE: &"ERR_UNAVAILABLE",
+	ERR_UNCONFIGURED: &"ERR_UNCONFIGURED",
+	ERR_UNAUTHORIZED: &"ERR_UNAUTHORIZED",
+	ERR_PARAMETER_RANGE_ERROR: &"ERR_PARAMETER_RANGE_ERROR",
+	ERR_OUT_OF_MEMORY: &"ERR_OUT_OF_MEMORY",
+	ERR_FILE_NOT_FOUND: &"ERR_FILE_NOT_FOUND",
+	ERR_FILE_BAD_DRIVE: &"ERR_FILE_BAD_DRIVE",
+	ERR_FILE_BAD_PATH: &"ERR_FILE_BAD_PATH",
+	ERR_FILE_NO_PERMISSION: &"ERR_FILE_NO_PERMISSION",
+	ERR_FILE_ALREADY_IN_USE: &"ERR_FILE_ALREADY_IN_USE",
+	ERR_FILE_CANT_OPEN: &"ERR_FILE_CANT_OPEN",
+	ERR_FILE_CANT_WRITE: &"ERR_FILE_CANT_WRITE",
+	ERR_FILE_CANT_READ: &"ERR_FILE_CANT_READ",
+	ERR_FILE_UNRECOGNIZED: &"ERR_FILE_UNRECOGNIZED",
+	ERR_FILE_CORRUPT: &"ERR_FILE_CORRUPT",
+	ERR_FILE_MISSING_DEPENDENCIES: &"ERR_FILE_MISSING_DEPENDENCIES",
+	ERR_FILE_EOF: &"ERR_FILE_EOF",
+	ERR_CANT_OPEN: &"ERR_CANT_OPEN",
+	ERR_CANT_CREATE: &"ERR_CANT_CREATE",
+	ERR_QUERY_FAILED: &"ERR_QUERY_FAILED",
+	ERR_ALREADY_IN_USE: &"ERR_ALREADY_IN_USE",
+	ERR_LOCKED: &"ERR_LOCKED",
+	ERR_TIMEOUT: &"ERR_TIMEOUT",
+	ERR_CANT_CONNECT: &"ERR_CANT_CONNECT",
+	ERR_CANT_RESOLVE: &"ERR_CANT_RESOLVE",
+	ERR_CONNECTION_ERROR: &"ERR_CONNECTION_ERROR",
+	ERR_CANT_ACQUIRE_RESOURCE: &"ERR_CANT_ACQUIRE_RESOURCE",
+	ERR_CANT_FORK: &"ERR_CANT_FORK",
+	ERR_INVALID_DATA: &"ERR_INVALID_DATA",
+	ERR_INVALID_PARAMETER: &"ERR_INVALID_PARAMETER",
+	ERR_ALREADY_EXISTS: &"ERR_ALREADY_EXISTS",
+	ERR_DOES_NOT_EXIST: &"ERR_DOES_NOT_EXIST",
+	ERR_DATABASE_CANT_READ: &"ERR_DATABASE_CANT_READ",
+	ERR_DATABASE_CANT_WRITE: &"ERR_DATABASE_CANT_WRITE",
+	ERR_COMPILATION_FAILED: &"ERR_COMPILATION_FAILED",
+	ERR_METHOD_NOT_FOUND: &"ERR_METHOD_NOT_FOUND",
+	ERR_LINK_FAILED: &"ERR_LINK_FAILED",
+	ERR_SCRIPT_FAILED: &"ERR_SCRIPT_FAILED",
+	ERR_CYCLIC_LINK: &"ERR_CYCLIC_LINK",
+	ERR_INVALID_DECLARATION: &"ERR_INVALID_DECLARATION",
+	ERR_DUPLICATE_SYMBOL: &"ERR_DUPLICATE_SYMBOL",
+	ERR_PARSE_ERROR: &"ERR_PARSE_ERROR",
+	ERR_BUSY: &"ERR_BUSY",
+	ERR_SKIP: &"ERR_SKIP",
+	ERR_HELP: &"ERR_HELP",
+	ERR_BUG: &"ERR_BUG",
+	ERR_PRINTER_ON_FIRE: &"ERR_PRINTER_ON_FIRE"
+}
+
+var _message: StringName
+
+func _init(p_error: StringName = _ok_msg) -> void:
+	if p_error.is_empty():
+		_message = _ok_msg
+	else:
+		_message = p_error
+
+func has_value():
+	return false
+
+func _to_string() -> String:
+	return _message
+	
+## Use this to check if the operation completed successfully.
+func is_ok() -> bool:
+	return _message == _ok_msg
+	
+## Use this to check if the operation failed and has an error message.
+func is_error() -> bool:
+	return _message != _ok_msg
+	
+func is_unknown_error() -> bool:
+	return _message == _unknown_msg
+
+## gets the error message or "OK" if the result is ok.
+func get_message() -> StringName:
+	return _message

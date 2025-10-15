@@ -11,12 +11,13 @@ config_version=5
 [application]
 
 config/name="New Game Project"
+run/main_scene="uid://b6vf1aji6dy38"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://icon.svg"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/gdscript_codegen/plugin.cfg")
+enabled=PackedStringArray("res://addons/gdscript_source_generation/plugin.cfg")
 
 [physics]
 
