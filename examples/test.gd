@@ -9,3 +9,8 @@ func _ready():
 	
 	assert(not IntResult.error("hello").is_ok())
 	assert(IntResult.ok(2).is_ok())
+	
+	assert(not DictionaryArrayResult.error("failed").is_ok())
+	assert(DictionaryArrayResult.ok([{ "hello": "world" }]).is_ok())
+	
+	get_tree().quit(0)

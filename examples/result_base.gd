@@ -1,6 +1,6 @@
 @abstract
 class_name ResultBase
-extends Object
+extends RefCounted
 
 const _ok_msg = &"OK"
 const _unknown_msg = &"Unknown Error"

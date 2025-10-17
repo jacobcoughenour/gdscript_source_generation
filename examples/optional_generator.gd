@@ -33,7 +33,7 @@ func get_file_name(source_data: Variant) -> String:
 	
 func generate_source(source_data: Variant) -> String:
 	
-	var s = """extends Object
+	var s = """extends RefCounted
 class_name {typeName}
 
 var _has_value: bool

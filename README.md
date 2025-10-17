@@ -16,7 +16,7 @@ func get_file_name(source_data: Variant) -> String:
 	return "example_" + source_data
 	
 func generate_source(source_data: Variant) -> String:
-	return """extends Object
+	return """extends RefCounted
 class_name Example{name}
 
 func test() -> String:
@@ -28,7 +28,7 @@ This generator will generate the following files:
 
 ```gdscript
 # _generated_/example_1_gen.gd
-extends Object
+extends RefCounted
 class_name Example1
 
 func test() -> String:
@@ -37,7 +37,7 @@ func test() -> String:
 
 ```gdscript
 # _generated_/example_2_gen.gd
-extends Object
+extends RefCounted
 class_name Example2
 
 func test() -> String:
