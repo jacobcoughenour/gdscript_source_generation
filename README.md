@@ -1,4 +1,5 @@
 # GDScript Source Generation Addon for Godot
+
 An addon for Godot that adds basic scriptable source generation. Inspired by [C# source generators](https://devblogs.microsoft.com/dotnet/introducing-c-source-generators/).
 
 All you have to do is extend ScriptGenerator and Click `Run Code Generation` in Project -> Tools.
@@ -45,16 +46,18 @@ func test() -> String:
 
 ## Installation
 
+> Requires Godot 4.5 or higher
+
 * Copy `gdscript_source_generation` from the addons folder in this repo to your project's addons folder. 
 * Open Project Settings -> Plugins then enable the plugin.
 
 ## FAQ
 
 ### Why?
-Read my post for why I made this: [jacobcoughenour.com/posts/gdscript-fake-generics/](https://jacobcoughenour.com)
+Read my post for why I made this: [https://jacobcoughenour.com/posts/gdscript-fake-generics/](https://jacobcoughenour.com/posts/gdscript-fake-generics/)
 
 ### Does this use AI?
-No
+No.
 
 ### Can I generate the files outside of the editor?
 Yes. Both the `generate` and `clean` commands are available as scripts. In the same directory that your project.godot file is in, you can run them like this:
