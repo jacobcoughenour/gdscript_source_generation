@@ -2,7 +2,7 @@
 
 An addon for Godot that adds basic scriptable source generation. Inspired by [C# source generators](https://devblogs.microsoft.com/dotnet/introducing-c-source-generators/).
 
-All you have to do is extend ScriptGenerator and Click `Run Code Generation` in Project -> Tools.
+All you have to do is extend ScriptGenerator and Click `Run Source Generation` in Project -> Tools.
 
 ## Example
 ```gdscript
@@ -62,14 +62,14 @@ No.
 ### Can I generate the files outside of the editor?
 Yes. Both the `generate` and `clean` commands are available as scripts. In the same directory that your project.godot file is in, you can run them like this:
 ```
-godot --script addons/gdscript_codegen/generate.gd
-godot --script addons/gdscript_codegen/clean.gd
+godot --script addons/gdscript_source_generation/generate.gd
+godot --script addons/gdscript_source_generation/clean.gd
 ```
 > The `generate` script also cleans up the generated files so you don't have to always run `clean`
 
 ### Should I track the generated files in git/source control?
 
-That is up to you. You can chose to ignore the `_generated_` folders but . To get around any automated build issues, add `godot --script addons/gdscript_codegen/generate.gd` to your build script.
+That is up to you. You can chose to ignore the `_generated_` folders but . To get around any automated build issues, add `godot --script addons/gdscript_source_generation/generate.gd` to your build script.
 
 ### Why make a `_generated_` folder?
 This makes it easier for me to clean up all the generated files before generating new ones. I had it ending the files with `.gen.gd` but that broke gdUnit4 when I was generating unit tests.

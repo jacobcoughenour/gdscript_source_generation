@@ -2,19 +2,33 @@
 extends EditorPlugin
 class_name SourceGenerationPlugin
 
+var _registered = false
+
 func _enable_plugin() -> void:
+	_register()
+	
+func _enter_tree() -> void:
+	_register()
+	
+func _register() -> void:
+	if _registered:
+		return
+	_registered = true
 	var command_palette = EditorInterface.get_command_palette()
-	command_palette.add_command("Run Code Generation", "codegen/generate", Callable(run_codegen))
-	command_palette.add_command("Remove All Generated Files", "codegen/remove_generated", Callable(run_clean))
-	add_tool_menu_item("Run Code Generation", Callable(run_codegen))
+	command_palette.add_command("Run Source Generation", "sourcegen/generate", Callable(run_codegen))
+	command_palette.add_command("Remove All Generated Files", "sourcegen/remove_generated", Callable(run_clean))
+	add_tool_menu_item("Run Source Generation", Callable(run_codegen))
 	add_tool_menu_item("Remove All Generated Files", Callable(run_clean))
 
 func _disable_plugin() -> void:
+	if not _registered:
+		return
 	var command_palette = EditorInterface.get_command_palette()
-	command_palette.remove_command("codegen/generate")
-	command_palette.remove_command("codegen/remove_generated")
-	remove_tool_menu_item("Run Code Generation")
+	command_palette.remove_command("sourcegen/generate")
+	command_palette.remove_command("sourcegen/remove_generated")
+	remove_tool_menu_item("Run Source Generation")
 	remove_tool_menu_item("Remove All Generated Files")
+	_registered = false
 	
 var _confirm_dialog
 	
