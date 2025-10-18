@@ -26,6 +26,8 @@ func get_source_data() -> Array:
 		OptionalTypeSettings.new("OptionalBool", "bool", "bool", "false"),
 		OptionalTypeSettings.new("OptionalString", "String", "string", "\"\""),
 		OptionalTypeSettings.new("OptionalDictionary", "Dictionary", "dictionary", "{}"),
+		OptionalTypeSettings.new("OptionalVector2", "Vector2", "vector2", "Vector2.ZERO"),
+		OptionalTypeSettings.new("OptionalDictionaryArray", "Array[Dictionary]", "dictionary_array", "[]")
 	]
 
 func get_file_name(source_data: Variant) -> String:

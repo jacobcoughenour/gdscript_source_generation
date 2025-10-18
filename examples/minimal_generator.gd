@@ -7,7 +7,7 @@ func get_file_name(source_data: Variant) -> String:
 	return "example_" + source_data
 	
 func generate_source(source_data: Variant) -> String:
-	return """extends Object
+	return """extends RefCounted
 class_name Example{name}
 
 func test() -> String:
